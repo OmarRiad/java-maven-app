@@ -44,6 +44,7 @@ pipeline {
                     echo 'deploying docker image...'
                 }
             }
+        }
         stage('commit version update'){
             steps {
                 script {
