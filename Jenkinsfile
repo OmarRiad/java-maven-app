@@ -35,7 +35,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]){
                     sh "docker build -t nanatwn/demo-app:${IMAGE_NAME} ."
                     sh 'echo $PASS | docker login - u $USER --password-stdin'
-                    sh "docker push nanatwn/demo-app:${IMAGE_NAME}"
+                    sh "docker push nanatwn/demo-app:${IMAGE_NAME}"}
                     }
                 }
             }
@@ -48,3 +48,4 @@ pipeline {
         }
     }
 }
+
