@@ -20,7 +20,7 @@ pipeline {
                 }
             }
         stage('build app') {
-            steps { 
+            steps {
                 script {
                     echo 'building the application...'
                     sh 'mvn clean package'
@@ -47,4 +47,3 @@ pipeline {
             }
         }
     }
-}
