@@ -36,16 +36,15 @@ pipeline {
                     sh "docker build -t nanatwn/demo-app:${IMAGE_NAME} ."
                     sh 'echo $PASS | docker login - u $USER --password-stdin'
                     sh "docker push nanatwn/demo-app:${IMAGE_NAME}"
+                    }
                 }
             }
-        }
         stage("deploy") {
             steps {
                 script {
                     echo 'deploying docker image...'
                 }
             }
-        }
         }
     }
 }
