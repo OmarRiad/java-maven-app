@@ -41,6 +41,7 @@ pipeline {
             steps {
                 script {
                     echo 'building the docker image...'
+                    echo 'test'
                     dockerLogin()
                     dockerBuild("omarriad07/demo-app")
                     dockerPush("omarriad07/demo-app")
@@ -50,7 +51,7 @@ pipeline {
         stage("deploy") {
             steps {
                 script {
-                    
+
                     echo 'deploying docker image to EC2...'
                     def shellCmd = "bash ./server-cmds.sh omarriad07/demo-app:${IMAGE_NAME}"
                     def ec2Instance = "ec2-user@13.38.11.113"
