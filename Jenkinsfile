@@ -50,6 +50,7 @@ pipeline {
         stage("deploy") {
             steps {
                 script {
+                    
                     echo 'deploying docker image to EC2...'
                     def shellCmd = "bash ./server-cmds.sh omarriad07/demo-app:${IMAGE_NAME}"
                     def ec2Instance = "ec2-user@13.38.11.113"
