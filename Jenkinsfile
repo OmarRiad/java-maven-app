@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+@Library('jenkinsEx-shared-library') _
 
 library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
     [$class: 'GitSCMSource',
@@ -39,10 +40,9 @@ pipeline {
             steps {
                 script {
                     echo 'building the docker image...'
-                    buildImage(env.IMAGE_NAME)
                     dockerLogin()
-                    dockerPush(env.IMAGE_NAME)
-                }
+                    dockerBuild("omarriad07/demo-app")
+                    dockerPush("omarriad07/demo-app")
             }
         } 
         stage("deploy") {
@@ -60,18 +60,18 @@ pipeline {
             }               
         }
         stage("commit version update"){
-      steps{
-        script{
-          withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_API_TOKEN')]){
+            steps{
+                script{
+                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_API_TOKEN')]){
 
-            sh "git remote set-url origin https://${GITHUB_API_TOKEN}@github.com/OmarRiad/java-maven-app.git"
-            sh 'git add .'
-            sh 'git commit -m "ci: version bump"'
-            sh 'git push origin HEAD:main'
-          }
+                    sh "git remote set-url origin https://${GITHUB_API_TOKEN}@github.com/OmarRiad/java-maven-app.git"
+                    sh 'git add .'
+                    sh 'git commit -m "ci: version bump"'
+                    sh 'git push origin HEAD:main'
+                    }
+                }
+            }
         }
-      }
-    }
         
     }
 }
