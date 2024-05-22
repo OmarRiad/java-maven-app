@@ -43,6 +43,7 @@ pipeline {
                     dockerLogin()
                     dockerBuild("omarriad07/demo-app")
                     dockerPush("omarriad07/demo-app")
+                }
             }
         } 
         stage("deploy") {
