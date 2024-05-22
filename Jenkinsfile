@@ -25,7 +25,7 @@ pipeline {
 
                 def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
                 def version = matcher[0][1]
-                env.IMAGE_NAME = "omarriad07/demo-app:$version-$BUILD_NUMBER"
+                env.IMAGE_NAME = "$version-$BUILD_NUMBER"
             }
         }
     }
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     echo 'deploying docker image to EC2...'
-                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
+                    def shellCmd = "bash ./server-cmds.sh omarriad07/demo-app:${IMAGE_NAME}"
                     def ec2Instance = "ec2-user@13.38.11.113"
                     sshagent(['ec2-server-key']) {
                         sh "scp server-cmds.sh ${ec2Instance}:/home/ec2-user"
@@ -64,8 +64,7 @@ pipeline {
             steps{
                 script{
                 withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_API_TOKEN')]){
-                    sh 'git config --global user.email "jenkins@example.com"'
-                    sh 'git config user.name "jenkins"'
+
                     sh "git remote set-url origin https://${GITHUB_API_TOKEN}@github.com/OmarRiad/java-maven-app.git"
                     sh 'git add .'
                     sh 'git commit -m "ci: version bump"'
