@@ -65,7 +65,8 @@ pipeline {
             steps{
                 script{
                 withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_API_TOKEN')]){
-
+                    sh 'git config --global user.email "jenkins@example.com"'
+                    sh 'git config --global user.name "jenkins"'
                     sh "git remote set-url origin https://${GITHUB_API_TOKEN}@github.com/OmarRiad/java-maven-app.git"
                     sh 'git add .'
                     sh 'git commit -m "ci: version bump"'
