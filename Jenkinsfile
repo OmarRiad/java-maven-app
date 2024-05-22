@@ -1,7 +1,11 @@
 #!/usr/bin/env groovy
 
-@Library('jenkinsEx-shared-library') _
-
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+    remote: 'https://github.com/OmarRiad/jenkins-shared-library.git',
+    credentialsID: 'github-credentials'
+    ]
+)
 
 pipeline {
     agent any
@@ -13,7 +17,14 @@ pipeline {
         stage("increment version"){
         steps{
             script{
-                 IncrementV()
+                echo "incrementing app version"
+                sh 'mvn build-helper:parse-version versions:set \
+                    -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                    versions:commit'
+
+                def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                def version = matcher[0][1]
+                env.IMAGE_NAME = "$version-$BUILD_NUMBER"
             }
         }
     }
@@ -52,9 +63,12 @@ pipeline {
       steps{
         script{
           withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_API_TOKEN')]){
-                        setUser()
-                        gitPush()
-                    }
+
+            sh "git remote set-url origin https://${GITHUB_API_TOKEN}@github.com/OmarRiad/java-maven-app.git"
+            sh 'git add .'
+            sh 'git commit -m "ci: version bump"'
+            sh 'git push origin HEAD:main'
+          }
         }
       }
     }
