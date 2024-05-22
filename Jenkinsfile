@@ -1,21 +1,22 @@
 #!/usr/bin/env groovy
 
-library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
-    [$class: 'GitSCMSource',
-    remote: 'https://github.com/OmarRiad/jenkins-shared-library.git',
-    credentialsID: 'github-credentials'
-    ]
-)
+@Library('jenkinsEx-shared-library') _
+
 
 pipeline {
     agent any
     tools {
         maven 'maven-3.9'
     }
-    environment {
-        IMAGE_NAME = 'omarriad07/demo-app:java-maven-2.0'
-    }
+    
     stages {
+        stage("increment version"){
+        steps{
+            script{
+                 IncrementV()
+            }
+        }
+    }
         
         stage('build app') {
             steps {
@@ -47,6 +48,16 @@ pipeline {
                 }
             }               
         }
+        stage("commit version update"){
+      steps{
+        script{
+          withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_API_TOKEN')]){
+                        setUser()
+                        gitPush()
+                    }
+        }
+      }
+    }
         
     }
 }
